@@ -17,24 +17,43 @@ typedef struct {
 	// S = Ship
 	// X = hit
 	// O = miss
-	char grid[10][10];
+	char map[10][10];
 	char shots[10][10];
-	int sunken;
+	int destroyed;
 } player;
 
+void name();
 void first();
 void playerInit(player *p);
 int playerTurn(player *u, player *a);
 int computerTurn(player *a, player *b);
-void placeShips(char grid[10][10], ship ships[5]);
+void placeShips(char map[10][10], ship ships[5]);
 int isValid(int x, int y);
-int isClear(char grid[10][10], int x, int y);
-void printGrids(player *p);
+int isClear(char map[10][10], int x, int y);
+void printMap(player *p);
 void initialize(char arr[10][10]);
 int shot(int x, int y, player *from, player *to);
 int c2i(char c);
 char i2c(int i);
 
+void name() {
+   char name[25];
+   FILE *file;
+
+   file = fopen("program.txt", "w");
+
+   if(file == NULL) {
+      printf("Error!");   
+      exit(1);             
+   }
+
+    printf("Enter name: ");
+    scanf("%s", name);
+
+	fprintf(file,"%s\n",name);
+
+    fclose(file);	
+}
 
 
 void first(){
@@ -59,6 +78,7 @@ void first(){
 			printf("\t\t      \\   o   o   o   o   o  /              _______________/  o   o \\____         \n");
 			printf("\t\t~~~~~~~\\~~~~~~~~~~~~~~~~~~~~/~~~~~~~~~~~~~~/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\~~~~~~~ \n");
 			printf("\t\t                                                                                    \n");
+			printf("\t\t                              			                                           \n");
 			printf("\t\t                                1. Play game                                        \n");
 			printf("\t\t                                2. Exit                                             \n");
 			printf("\t\t------------------------------------------------------------------------------------\n");
@@ -97,13 +117,13 @@ void first(){
 
 void playerInit(player *p) {
 
-	initialize(p->grid);
+	initialize(p->map);
 	
 	initialize(p->shots);
 	
-	placeShips(p->grid, p->ships);
+	placeShips(p->map, p->ships);
 	
-	p->sunken = 0;
+	p->destroyed = 0;
 	
 }
 
@@ -129,12 +149,12 @@ int playerTurn(player *u, player *a) {
 int computerTurn(player *a, player *u) {
 	int i, j, x, y, k;
 	
-	//look for a hit and shoot a randomly chosen water cell around it
+	//hit and shoot
 	for (i = 0; i < 10; i++) {
 		for (j = 0; j < 10; j++) {
 		
 			if (a->shots[i][j] == 'x') { 
-				for (k = 0; k < 3; k++) { //make 3 attempts to shoot around it
+				for (k = 0; k < 3; k++) {
 					x = i + rand() % 3 - 1;
 					y = j + rand() % 3 - 1;
 
@@ -152,7 +172,7 @@ int computerTurn(player *a, player *u) {
 		}
 	}
 	
-	//shoot randomly
+	//random shoot
 	do {
 		x = rand() % 10;
 		y = rand() % 10;
@@ -167,7 +187,7 @@ int computerTurn(player *a, player *u) {
 	return 0;
 }
 
-void placeShips(char grid[10][10], ship ships[5]) {
+void placeShips(char map[10][10], ship ships[5]) {
 	int s, i, d, c, x, y, j, cx, cy;	
 
 	for (i = 0; i < 5; i++) {
@@ -183,7 +203,7 @@ void placeShips(char grid[10][10], ship ships[5]) {
 			c = 1;
 
 			for (j = 0; j < shipShots[i]; j++) {
-				if (isClear(grid, cx, cy)) {
+				if (isClear(map, cx, cy)) {
 					if (d == 0) {
 						cy++;
 					} 
@@ -205,7 +225,7 @@ void placeShips(char grid[10][10], ship ships[5]) {
 			cy = y;
 			
 			for (j = 0; j < shipShots[i]; j++) {
-				grid[cx][cy] = 'S';//i + '0';
+				map[cx][cy] = 'S';//i + '0';
 				ships[i].squares[j][0] = cx;
 				ships[i].squares[j][1] = cy;
 				ships[i].squares[j][2] = 0;
@@ -231,15 +251,15 @@ int isValid(int x, int y) {
 	return 1;
 }
 
-int isClear(char grid[10][10], int x, int y) {
-	if (isValid(x, y) && grid[x][y] == '~') {
+int isClear(char map[10][10], int x, int y) {
+	if (isValid(x, y) && map[x][y] == '~') {
 		return 1;
 	} 
 
 	return 0;
 }
 
-void printGrids(player *p) {
+void printMap(player *p) {
 	int x, y;
 	
 	printf("\n  0 1 2 3 4 5 6 7 8 9       0 1 2 3 4 5 6 7 8 9\n");
@@ -255,7 +275,7 @@ void printGrids(player *p) {
 		printf("%c ", 'A'+x);
 
 		for (y = 0; y < 10; y++) {
-			printf("%c ", p->grid[x][y]);
+			printf("%c ", p->map[x][y]);
 		}
 		
 		printf("\n");
@@ -274,14 +294,14 @@ void initialize(char arr[10][10]) {
 }
 
 int shot(int x, int y, player *from, player *to) { //it returns 1 if player from wins
-	if (to-> grid[x][y] == '~' || to-> grid[x][y] == 'o') { //miss
-		to-> grid[x][y] = 'o';
+	if (to-> map[x][y] == '~' || to-> map[x][y] == 'o') { //miss
+		to-> map[x][y] = 'o';
 		from-> shots[x][y] = 'o';
 		printf("Miss!\n");
 	} 
 
-	else if (to->grid[x][y] == 'S') { //hit
-		to-> grid[x][y] = 'X';
+	else if (to->map[x][y] == 'S') { //hit
+		to-> map[x][y] = 'X';
 		from-> shots[x][y] = 'X';
 
 		//updating ship's state
@@ -299,8 +319,8 @@ int shot(int x, int y, player *from, player *to) { //it returns 1 if player from
 					}
 					if (isSunk) {
 						printf("%s hit and sunk!\n", shipName[i]);
-						from-> sunken++;
-						if (from->sunken == 5){
+						from-> destroyed++;
+						if (from-> destroyed== 5){
 							return 1;
 						} 
 
@@ -334,27 +354,27 @@ int main() {
 
 	srand (time(NULL) );
 	
-	player user, ai;
-
+	player user, computer;
+	name();
 	first();
 	playerInit(&user);
-	playerInit(&ai);
+	playerInit(&computer);
 	
 
 	while(1) {
-		printGrids (&user);
-		//printGrids(&ai); just for debugging
+		printMap(&user);
+		//printMap(&ai); just for debugging
 		printf("\n\n");
 
-		if (playerTurn(&user, &ai)) {
-				printGrids(&user);
-				printf("\n\nYAY! YOU WON!\n");
+		if (playerTurn(&user, &computer)) {
+				printMap(&user);
+				printf("\n\nWIN!!!!!!!!!!!!!!!!!\n");
 				break;
 		}
 
-		if (computerTurn(&ai, &user)) {
-				printGrids(&user);
-				printf("\n\nWHOOPS, YOU LOST!\n");
+		if (computerTurn(&computer, &user)) {
+				printMap(&user);
+				printf("\n\nYOU LOST!!!!!!!!!!!\n");
 				break;
 		}
 	}
