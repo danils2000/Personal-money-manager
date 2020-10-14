@@ -2,12 +2,14 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+#include <string.h>
 
 const char *shipName[] = {"Carrier", "Battleship", "Cruiser", "Submarine", "Destroyer"};
 const int shipShots[] = {5, 4, 3, 3, 2};
 
+
 typedef struct {
-	int squares[5][3]; // 0=x, 1=y, 2=hit
+	int squares[5][3];
 } ship;
 
 typedef struct {
@@ -21,6 +23,7 @@ typedef struct {
 	char shots[10][10];
 	int destroyed;
 } player;
+
 
 void name();
 void first();
@@ -36,11 +39,13 @@ int shot(int x, int y, player *from, player *to);
 int c2i(char c);
 char i2c(int i);
 
-void name() {
-   char name[25];
-   FILE *file;
 
-   file = fopen("program.txt", "w");
+void name() {
+   FILE *file;
+   char* filename = "program.txt";
+   char name[25];
+
+   file = fopen(filename, "w");
 
    if(file == NULL) {
       printf("Error!");   
@@ -50,15 +55,30 @@ void name() {
     printf("Enter name: ");
     scanf("%s", name);
 
-	fprintf(file,"%s\n",name);
-
     fclose(file);	
 }
 
 
-void first(){
+
+void first() {
 	int userInput = 0;
 	int choice;
+	
+	FILE *file;
+    char str[25];
+    char* filename = "program.txt";
+ 
+    file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Could not open file %s",filename);
+    }
+
+    while (fgets(str, 25, file) != NULL) {
+        printf("%s", str);
+    	fclose(file);
+
+	}
+    fclose(file);	
 
 
 			printf("\t\t------------------------------------------------------------------------------------\n");
@@ -78,12 +98,12 @@ void first(){
 			printf("\t\t      \\   o   o   o   o   o  /              _______________/  o   o \\____         \n");
 			printf("\t\t~~~~~~~\\~~~~~~~~~~~~~~~~~~~~/~~~~~~~~~~~~~~/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\~~~~~~~ \n");
 			printf("\t\t                                                                                    \n");
-			printf("\t\t                              			                                           \n");
+			printf("\t\t                           Welcome: %s                                              \n", str);
 			printf("\t\t                                1. Play game                                        \n");
 			printf("\t\t                                2. Exit                                             \n");
 			printf("\t\t------------------------------------------------------------------------------------\n");
 			
-			printf("Select option (1-2): ");
+			printf("%s ,select option (1-2): ", str);
 			scanf("%d", &userInput);
 
 		switch (userInput) {
@@ -100,6 +120,7 @@ void first(){
 			printf("Type any number since 2 to start play\n");
 			printf("Option: ");
 			scanf("%d", &choice);
+
 			  if(choice == 1) {
 				  return first();
 			  } 
@@ -129,10 +150,10 @@ void playerInit(player *p) {
 
 int playerTurn(player *u, player *a) {
 	char x;
-	int y;
-	
+	int y , s;
+		
 	printf("Insert coordinates: ");
-	int s = scanf(" %c%d", &x, &y);
+	s = scanf(" %c%d", &x, &y);
 	if (s == 2 && x >= 'a' && x <= 'j' && y >= 0 && y <= 9 ) { 	
 		if( shot(c2i(x), y, u, a)) {
 			return 1;
@@ -294,6 +315,7 @@ void initialize(char arr[10][10]) {
 }
 
 int shot(int x, int y, player *from, player *to) { //it returns 1 if player from wins
+
 	if (to-> map[x][y] == '~' || to-> map[x][y] == 'o') { //miss
 		to-> map[x][y] = 'o';
 		from-> shots[x][y] = 'o';
@@ -304,7 +326,6 @@ int shot(int x, int y, player *from, player *to) { //it returns 1 if player from
 		to-> map[x][y] = 'X';
 		from-> shots[x][y] = 'X';
 
-		//updating ship's state
 		int i, j, k;
 		for (i = 0; i < 5; i++) {
 			for (j = 0; j < shipShots[i]; j++) {
@@ -318,9 +339,10 @@ int shot(int x, int y, player *from, player *to) { //it returns 1 if player from
 						}
 					}
 					if (isSunk) {
-						printf("%s hit and sunk!\n", shipName[i]);
+						printf("%s hit and KILL!!!!!!!!!\n", shipName[i]);
 						from-> destroyed++;
-						if (from-> destroyed== 5){
+						//if all ships
+						if (from-> destroyed == 5){
 							return 1;
 						} 
 
@@ -332,7 +354,7 @@ int shot(int x, int y, player *from, player *to) { //it returns 1 if player from
 		printf("Hit!\n");	
 
 	} 
-	else { //already hit
+	else { 
 		printf("It was already hit there.\n");
 	}
 	
@@ -367,19 +389,54 @@ int main() {
 		printf("\n\n");
 
 		if (playerTurn(&user, &computer)) {
+
 				printMap(&user);
 				printf("\n\nWIN!!!!!!!!!!!!!!!!!\n");
+
+				FILE *file;
+   				char* filename = "game_results.txt";
+  				char const *result = "Win!\n";
+				size_t count;
+
+  				 file = fopen(filename, "a");
+
+   				if(file == NULL) {
+     			 printf("Error!");   
+      			exit(1);             
+   				} 
+				else {
+					count = fwrite(result, sizeof(char), strlen(result), file);
+				   }
+
+    			fclose(file);	
 				break;
 		}
 
 		if (computerTurn(&computer, &user)) {
 				printMap(&user);
-				printf("\n\nYOU LOST!!!!!!!!!!!\n");
+				printf("\n\nYOU LOSE!!!!!!!!!!!\n");
+
+				 FILE *file;
+   				char* filename = "FFFFFFF.txt";
+  				char const *result = "Lose!\n";
+				size_t count;
+
+  				 file = fopen(filename, "a");
+
+   				if(file == NULL) {
+     			 printf("Error!");   
+      			exit(1);             
+   				} 
+				else {
+					count = fwrite(result, sizeof(char), strlen(result), file);
+
+				   }
+
+    			fclose(file);	
 				break;
 		}
 	}
 
 	return 0;
 }
-
 
