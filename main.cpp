@@ -24,26 +24,26 @@ private:
     float sum; // user balance
     int balance = 0;
     float a;
-    unsigned x; // deposite or withdraw
+    unsigned x; // income or expence
 public:
-    void decorativeLine(); // line painting
-    void author();
-    void depositeWithDetails(); // welcom with author name
-    void depositeRepeat();
-    void withdrawWithDetails();
-    void withdrawRepeat();
-    int read_amout();
-    void amout();
-    void dep_in();
-    void deposit(); // deposite +
-    void withdraw(); // withdraw -
-    void editDepositeDetails(); // deposite + to file
-    void editWithdrawDetails(); // withdraw - to file
-    void depositeWriteInFile(); // new account to file
-    void withdrawWriteInFile(); // new account to file
+    void decorativeLine(); // line painting just for decoration
+    void author(); // welcome page with author name
+    void depositeWithDetails(); // template for income with all needed incformation detailt to deposite.txt
+    void depositeRepeat();  // write to amout.txt. Checking current balance as this calculate all income and expense 
+    void withdrawWithDetails(); // template for expense with all needed incformation to withdraw.txt
+    void withdrawRepeat(); // write to amout.txt. Checking current balance as this calculate all income and expense 
+    void depositeWithoutDetails(); // Add income without details
+    void withdrawWithouDetails(); // Add expense without details
+    void amout(); // Cheking current balance 
+    void deposit(); // income template
+    void withdraw(); // expense template
+    void editDepositeDetails(); // income + to file
+    void editWithdrawDetails(); // expense - to file
+    void depositeWriteInFile(); // new income to file
+    void withdrawWriteInFile(); // new expense to file
     void depositeAll(); // accounts template
     void withdrawAll(); // accounts template
-    void read_rec(); //show all accounts from file with template
+    void readAll(); //show all accounts from file with template
     void searchDep(); // search account in file
     void searchWith(); // search account in file
     void deleteIncome(); // delete account from file
@@ -110,7 +110,7 @@ void bank::depositeRepeat() {
     }
     inFile.close();
 
-    cout << "Please, confirm amout: ";
+    cout << "Please, confirm amout:+ ";
     cin >> a;
     sum = value + a;
 
@@ -120,7 +120,6 @@ void bank::depositeRepeat() {
         out << sum << endl;
     }
      
-    std::cout << "End of program" << endl;
     out.close();
 }
 
@@ -154,7 +153,69 @@ void bank::withdrawRepeat() {
     }
     inFile.close();
 
-    cout << "Please, confirm amout: ";
+    cout << "Please, confirm amout:- ";
+    cin >> a;
+    sum = value - a;
+
+    ofstream out;  
+    out.open("amout.txt");
+    if (out.is_open()) {
+        out << sum << endl;
+    }
+     
+    out.close();
+}
+
+//deposite without details
+void bank::depositeWithoutDetails() {
+    ifstream inFile;
+    float value;
+
+    inFile.open("amout.txt");
+    if (!inFile) {
+        cout << "\nError opening file.\n";
+    }
+
+    while (inFile >> value) {
+        if (value > 0) {
+            cout << value;
+        }
+    }
+    inFile.close();
+    
+    cout << "NOTE! YOU WILL NOT HAVE ANY DETAILS IN YOUR LIST ABOUT THIS INCOME" << endl;
+    cout << "Please, enter income:+ ";
+    cin >> a;
+    sum = value + a;
+
+    ofstream out;  
+    out.open("amout.txt");
+    if (out.is_open()) {
+        out << sum << endl;
+    }
+     
+    out.close();
+}
+
+//withdraw whitout details
+void bank::withdrawWithouDetails() {
+    ifstream inFile;
+    float value;
+
+    inFile.open("amout.txt");
+    if (!inFile) {
+        cout << "\nError opening file.\n";
+    }
+
+    while (inFile >> value) {
+        if (value > 0) {
+            cout << value;
+        }
+    }
+    inFile.close();
+
+    cout << "NOTE! YOU WILL NOT HAVE ANY DETAILS IN YOUR LIST ABOUT THIS EXPENSE" << endl;
+    cout << "Please, enter amout for expense:- ";
     cin >> a;
     sum = value - a;
 
@@ -191,7 +252,7 @@ void bank::withdrawAll() {
 //deposite +
 void bank::deposit() {
     cout << endl;
-    cout << "Enter data to deposite: +$ ";
+    cout << "Enter data to income: +$ ";
     cin >> x;
     sum+=x;
 }
@@ -199,32 +260,11 @@ void bank::deposit() {
 //withdraw -
 void bank::withdraw() {
     cout << endl;
-    cout << "Enter data to withdraw: -$ ";
+    cout << "Enter data to expense: -$ ";
     cin >> x;
     sum-=x;
 }
 
-int bank::read_amout() {
-    ifstream inFile;
-    float value;
-
-    inFile.open("amout.txt");
-    if (!inFile) {
-        cout << "\nError opening file.\n";
-        return 13;
-    }
-
-    while (inFile >> value)
-    {
-        if (value > 0)
-        {  
-            cout << value;
-        }
-    }
-    inFile.close();
-
-    return value;
-}
 
 // add and save account to file bank.txt
 void bank::depositeWriteInFile() {
@@ -260,10 +300,15 @@ void bank::amout() {
     }
     
     inFile.close();
-    cout << "Sum = " << sum << endl; 
+    cout << "Your Balance is = " << sum << endl; 
+    inFile.close();
+
+    cin.get();
+    cout << "Press any key ☺" << endl;
+    cin.get();
 }
 
-void bank::read_rec() {
+void bank::readAll() {
 //Deposite data---------------------------------------------------------------------------------------------------
     ifstream dep; // Stream class to read from files
     dep.open("deposite.txt", ios::binary);// open file (bank.txt) in binary mode to write and read from file
@@ -314,7 +359,6 @@ void bank::read_rec() {
 
     cout << "Press any key ☺" << endl;
     cin.get();
-    withdra.close(); // close file
 }
 
 
@@ -363,9 +407,11 @@ void bank::searchWith() {
     cin >> choise;
     search.seekg((choise-1)*sizeof(*this)); // find account what user need
     search.read(reinterpret_cast<char*>(this), sizeof(*this)); // read and show all symblos that user need
-    withdrawAll(); // tempalte for accounts
+    withdraw(); // tempalte FOR expense
     cout << endl;
     cin.get();
+    search.close();
+
     cout << "Press any key ☺" << endl;
     cin.get();
 }
@@ -397,6 +443,35 @@ void bank::editDepositeDetails() {
     // open void deposite() for deposite
     deposit();
     indep.write(reinterpret_cast<char*>(this), sizeof(*this));
+    indep.close();
+
+    ifstream inFile;
+    float value;
+
+    inFile.open("amout.txt");
+    if (!inFile) {
+        cout << "\nError opening file.\n";
+    }
+
+    while (inFile >> value) {
+        if (value > 0) {
+            cout << value;
+        }
+    }
+    inFile.close();
+
+    cout << "Please, confirm amout: ";
+    cin >> a;
+    sum = value + a;
+
+    ofstream out;  
+    out.open("amout.txt");
+    if (out.is_open()) {
+        out << sum << endl;
+    }
+     
+    std::cout << "End of program" << endl;
+    out.close();
 }
 
 void bank::editWithdrawDetails() {
@@ -410,6 +485,7 @@ void bank::editWithdrawDetails() {
         cout << "\nError in opening! File Not Found!!" << endl;
         return;
     }
+
     inwithdr.seekg(0, ios::end);
     int count = inwithdr.tellg()/sizeof(*this);
     cout << "\n Our bank have " << count << " record in the system";
@@ -422,8 +498,37 @@ void bank::editWithdrawDetails() {
     inwithdr.close();
     inwithdr.open("bank.txt", ios::out|ios::in|ios::binary);
     inwithdr.seekp((n-1)*sizeof(*this));
-    withdraw();
+    withdrawAll();
     inwithdr.write(reinterpret_cast<char*>(this), sizeof(*this));
+    inwithdr.close();
+
+    ifstream inFile;
+    float value;
+
+    inFile.open("amout.txt");
+    if (!inFile) {
+        cout << "\nError opening file.\n";
+    }
+
+    while (inFile >> value) {
+        if (value > 0) {
+            cout << value;
+        }
+    }
+    inFile.close();
+
+    cout << "Please, confirm amout: ";
+    cin >> a;
+    sum = value - a;
+
+    ofstream out;  
+    out.open("amout.txt");
+    if (out.is_open()) {
+        out << sum << endl;
+    }
+     
+    std::cout << "End of program" << endl;
+    out.close();
 }
 
 void bank::deleteIncome() {
@@ -477,10 +582,10 @@ void bank::deleteWithdraw() {
     fstream tmpfile;
     tmpfile.open("file.txt", ios::out|ios::binary);
     infile.seekg(0);
-    for(int i=0; i<count; i++)
+    for(int i = 0; i < count; i++)
     {
         infile.read(reinterpret_cast<char*>(this),sizeof(*this));
-        if(i==(n-1))
+        if(i == (n-1))
             continue;
         tmpfile.write(reinterpret_cast<char*>(this), sizeof(*this));
     }
@@ -527,13 +632,13 @@ int main() {
             bank.amout();
             break;
         case 4:
-            bank.read_rec();
+            bank.readAll();
             break;
         case 5:
-            bank.editDepositeDetails();
+            bank.depositeWithoutDetails();
             break;
         case 6:
-            bank.editWithdrawDetails();
+            bank.withdrawWithouDetails();
             break;
         case 7:
             bank.searchDep();
