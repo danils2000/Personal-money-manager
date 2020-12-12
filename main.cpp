@@ -16,7 +16,7 @@ BANK RECORD
 #include <string>
 using namespace std;
 
-class bank {
+class PersonalFinance {
 private:
     char date[20]; // transaction date
     char description[20]; // user name
@@ -51,7 +51,7 @@ public:
 };
 
 //decorative line
-void bank::decorativeLine() {
+void PersonalFinance::decorativeLine() {
     int amount = 80;
     char symb = '-';
     for (int i = 0; i < amount; i++) {
@@ -60,7 +60,7 @@ void bank::decorativeLine() {
 }
 
 //start screen with author name and name of the game
-void bank::author() {
+void PersonalFinance::author() {
     decorativeLine();
     cout << "\n\n\t\t\t Personal finance programm" << endl;
     cout << "\t\t\t\t     by" << endl;
@@ -73,14 +73,13 @@ void bank::author() {
     cout << "\t\t  |            __|__|_/         /| / \\ |"<< endl;
     cout << "\t\t  |              |  |            | \\_/ |"<< endl;
     cout << "\t\t  |____________________________________|"<<endl;
-
-    
+ 
     decorativeLine(); //line
     cin.get(); //freeze
 }
 
-// Deposite with details  
-    void bank::depositeWithDetails() {
+// template for depositeRepeat
+    void PersonalFinance::depositeWithDetails() {
     decorativeLine();
 
     cout << "\nEnter date: ";
@@ -89,12 +88,13 @@ void bank::author() {
     cin  >> description;
     cout << "Location: ";
     cin  >> location;
-    cout << "Deposite: $";
+    cout << "Income: $";
     cin  >> x;
     cout << endl;
 }
 
-void bank::depositeRepeat() {
+//income to amout.txt
+void PersonalFinance::depositeRepeat() {
     ifstream inFile;
     float value;
 
@@ -123,7 +123,8 @@ void bank::depositeRepeat() {
     out.close();
 }
 
-void bank::withdrawWithDetails() {
+//template for withdrawRepeat
+void PersonalFinance::withdrawWithDetails() {
     decorativeLine();
 
     cout << "\nEnter date: ";
@@ -137,7 +138,8 @@ void bank::withdrawWithDetails() {
     cout << endl;
 }
 
-void bank::withdrawRepeat() {
+//write expense to amout.txt
+void PersonalFinance::withdrawRepeat() {
     ifstream inFile;
     float value;
 
@@ -167,7 +169,7 @@ void bank::withdrawRepeat() {
 }
 
 //deposite without details
-void bank::depositeWithoutDetails() {
+void PersonalFinance::depositeWithoutDetails() {
     ifstream inFile;
     float value;
 
@@ -198,7 +200,7 @@ void bank::depositeWithoutDetails() {
 }
 
 //withdraw whitout details
-void bank::withdrawWithouDetails() {
+void PersonalFinance::withdrawWithouDetails() {
     ifstream inFile;
     float value;
 
@@ -230,7 +232,7 @@ void bank::withdrawWithouDetails() {
 }
 
 //all accounts list
-void bank::depositeAll() {
+void PersonalFinance::depositeAll() {
     cout << endl;
     cout << "Date: "<< date << endl;
     cout << "Decription: " << description << endl;
@@ -240,7 +242,7 @@ void bank::depositeAll() {
 }
 
 //all accounts list
-void bank::withdrawAll() {
+void PersonalFinance::withdrawAll() {
     cout << endl;
     cout << "Date: "<< date << endl;
     cout << "Decription: " << description << endl;
@@ -250,7 +252,7 @@ void bank::withdrawAll() {
 }
 
 //deposite +
-void bank::deposit() {
+void PersonalFinance::deposit() {
     cout << endl;
     cout << "Enter data to income: +$ ";
     cin >> x;
@@ -258,7 +260,7 @@ void bank::deposit() {
 }
 
 //withdraw -
-void bank::withdraw() {
+void PersonalFinance::withdraw() {
     cout << endl;
     cout << "Enter data to expense: -$ ";
     cin >> x;
@@ -266,8 +268,8 @@ void bank::withdraw() {
 }
 
 
-// add and save account to file bank.txt
-void bank::depositeWriteInFile() {
+// add and save deposite to file deposite.txt
+void PersonalFinance::depositeWriteInFile() {
     ofstream outfile;
     outfile.open("deposite.txt", ios::app| ios::binary);
     depositeWithDetails();
@@ -275,8 +277,8 @@ void bank::depositeWriteInFile() {
     outfile.close();
 }
 
-// add and save account to file bank.txt
-void bank::withdrawWriteInFile() {
+// add and save expense to file withdraw.txt
+void PersonalFinance::withdrawWriteInFile() {
     ofstream outfile;
     outfile.open("withdraw.txt", ios::app| ios::binary);
     withdrawWithDetails();
@@ -284,7 +286,8 @@ void bank::withdrawWriteInFile() {
     outfile.close();
 }
 
-void bank::amout() {
+//check currecnt balance
+void PersonalFinance::amout() {
     int sum = 0;
     int x;
     ifstream inFile;
@@ -308,10 +311,11 @@ void bank::amout() {
     cin.get();
 }
 
-void bank::readAll() {
+// Read all data
+void PersonalFinance::readAll() {
 //Deposite data---------------------------------------------------------------------------------------------------
     ifstream dep; // Stream class to read from files
-    dep.open("deposite.txt", ios::binary);// open file (bank.txt) in binary mode to write and read from file
+    dep.open("deposite.txt", ios::binary);// open file (deposite.txt) in binary mode to write and read from file
 
     //If file can not to open
     if(!dep) {
@@ -336,7 +340,7 @@ void bank::readAll() {
 
 //Withdraw data-----------------------------------------------------------------------------------------------------
     ifstream withdra; // Stream class to read from files
-    withdra.open("withdraw.txt", ios::binary);// open file (bank.txt) in binary mode to write and read from file
+    withdra.open("withdraw.txt", ios::binary);// open file (withdraw.txt) in binary mode to write and read from file
 
     //If file can not to open
     if(!withdra) {
@@ -354,15 +358,15 @@ void bank::readAll() {
         }
     }
     cout << endl;
-    cin.get();
+    cin.get(); // freeze
     withdra.close(); // close file
 
     cout << "Press any key ☺" << endl;
     cin.get();
 }
 
-
-void bank::searchDep() {
+// Search needed data in deposite.txt
+void PersonalFinance::searchDep() {
     decorativeLine();
     cout <<"\n\n\t\t\tFind your income since 1" << endl;
     int choise; // choose account 
@@ -388,7 +392,8 @@ void bank::searchDep() {
     cin.get();
 }
 
-void bank::searchWith() {
+//Search needded data in withdraw.txt
+void PersonalFinance::searchWith() {
     decorativeLine();
     cout <<"\n\n\t\t\tFind your expense since 1" << endl;
     int choise; // choose account 
@@ -416,7 +421,8 @@ void bank::searchWith() {
     cin.get();
 }
 
-void bank::editDepositeDetails() {
+//edit deposite data
+void PersonalFinance::editDepositeDetails() {
     decorativeLine();
     cout <<"\n\n\t\t\tDeposite" << endl;
     int n;
@@ -440,7 +446,8 @@ void bank::editDepositeDetails() {
     indep.close();
     indep.open("bank.txt", ios::out|ios::in|ios::binary); // // open file in binary mode, for input mode and reading mode
     indep.seekp((n-1)*sizeof(*this)); //Sets the position where the next character is to be inserted into the output stream
-    // open void deposite() for deposite
+
+    // open void deposite() for income
     deposit();
     indep.write(reinterpret_cast<char*>(this), sizeof(*this));
     indep.close();
@@ -474,7 +481,8 @@ void bank::editDepositeDetails() {
     out.close();
 }
 
-void bank::editWithdrawDetails() {
+//edit withdraw data
+void PersonalFinance::editWithdrawDetails() {
     decorativeLine();
     cout <<"\n\n\t\t\tWithdraw" << endl;
     int n;
@@ -531,7 +539,8 @@ void bank::editWithdrawDetails() {
     out.close();
 }
 
-void bank::deleteIncome() {
+//Delete Income data
+void PersonalFinance::deleteIncome() {
     decorativeLine();
     cout <<"\n\n\t\t\tDELETE" << endl;
     int n;
@@ -563,7 +572,8 @@ void bank::deleteIncome() {
     rename("file.txt", "deposite.txt");
 }
 
-void bank::deleteWithdraw() {
+//Delete 
+void PersonalFinance::deleteWithdraw() {
     decorativeLine();
     cout <<"\n\n\t\t\tDELETE EXPENCE" << endl;
     int n;
@@ -597,8 +607,8 @@ void bank::deleteWithdraw() {
 
 int main() {
 
-    bank bank;
-    bank.author();
+    PersonalFinance PersonalFinance;
+    PersonalFinance.author();
     int option;
 
     while(true) {   
@@ -621,42 +631,42 @@ int main() {
 
         switch(option) {
         case 1:
-            bank.depositeWriteInFile();
-            bank.depositeRepeat();
+            PersonalFinance.depositeWriteInFile();
+            PersonalFinance.depositeRepeat();
             break;
         case 2:
-            bank.withdrawWriteInFile();
-            bank.withdrawRepeat();
+            PersonalFinance.withdrawWriteInFile();
+            PersonalFinance.withdrawRepeat();
             break;
         case 3:
-            bank.amout();
+            PersonalFinance.amout();
             break;
         case 4:
-            bank.readAll();
+            PersonalFinance.readAll();
             break;
         case 5:
-            bank.depositeWithoutDetails();
+            PersonalFinance.depositeWithoutDetails();
             break;
         case 6:
-            bank.withdrawWithouDetails();
+            PersonalFinance.withdrawWithouDetails();
             break;
         case 7:
-            bank.searchDep();
+            PersonalFinance.searchDep();
             break;
         case 8:
-            bank.searchWith();
+            PersonalFinance.searchWith();
             break;
         case 9:
-            bank.deleteIncome();
+            PersonalFinance.deleteIncome();
             break;
         case 10:
-            bank.deleteWithdraw();
+            PersonalFinance.deleteWithdraw();
             break;
         case 11:
-            bank.editDepositeDetails();
+            PersonalFinance.editDepositeDetails();
             break;
         case 12:
-            bank.editWithdrawDetails();
+            PersonalFinance.editWithdrawDetails();
             break;
         case 13:
             cout << "\n\nThank you for using your personal finance application. Have a nice day ☻☺\n\n" << endl;
