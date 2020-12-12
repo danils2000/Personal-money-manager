@@ -18,26 +18,28 @@ using namespace std;
 
 class bank {
 private:
-    char  id [20]; // user id
-    char  name[20]; // user name
-    char  lastName[20]; // user lastname
+    char date[20]; // transaction date
+    char description[20]; // user name
+    char location[20]; // user lastname
     float sum; // user balance
     int balance = 0;
     float a;
     unsigned x; // deposite or withdraw
 public:
     void line(); // line painting
-    void author(); // welcom with author name
-    void create(); // create account
-    void dep_rep();
+    void author();
+    void depositeWithDetails(); // welcom with author name
+    void depositeRepeat();
+    void withdrawWithDetails();
+    void withdrawRepeat();
     int read_amout();
     void amout();
     void dep_in();
     void deposit(); // deposite +
     void withdraw(); // withdraw -
-    void edit_deposite(); // deposite + to file
-    void edit_withdraw(); // withdraw - to file
-    void new_in(); // new account to file
+    void editDepositeDetails(); // deposite + to file
+    void editWithdrawDetails(); // withdraw - to file
+    void depositeWriteInFile(); // new account to file
     void all(); // accounts template
     void read_rec(); //show all accounts from file with template
     void search_rec(); // search account in file
@@ -59,7 +61,7 @@ void bank::author() {
     cout << "\n\n\t\t\t Personal finance programm" << endl;
     cout << "\t\t\t\t     by" << endl;
     cout << "\t\t\t\t©Danil Sisov\n" << endl;
-      cout << "\t\t  ______________________________________"<<endl;
+    cout << "\t\t  ______________________________________"<<endl;
     cout << "\t\t  |     _       _|__|_                 |"<< endl;
     cout << "\t\t  | /| / \\     / |  | \                 |"<< endl;
     cout << "\t\t  |  | \\_/     \\_|__|_                 |"<< endl;
@@ -73,22 +75,22 @@ void bank::author() {
     cin.get(); //freeze
 }
 
-// create account 
-    void bank::create() {
+// Deposite with details  
+    void bank::depositeWithDetails() {
     line();
 
     cout << "\nEnter date: ";
-    cin  >> id;
+    cin  >> date;
     cout << "Description: ";
-    cin  >> name;
+    cin  >> description;
     cout << "Location: ";
-    cin  >> lastName;
+    cin  >> location;
     cout << "Deposite: $";
     cin  >> x;
     cout << endl;
 }
 
-void bank::dep_rep() {
+void bank::depositeRepeat() {
     ifstream inFile;
     float value;
 
@@ -107,9 +109,8 @@ void bank::dep_rep() {
     }
     inFile.close();
 
-    cout << "Confirm amout: ";
+    cout << "Please, confirm amout: ";
     cin >> a;
-
     sum = value + a;
 
     ofstream out;  
@@ -119,17 +120,62 @@ void bank::dep_rep() {
     }
      
     std::cout << "End of program" << endl;
-
     out.close();
+}
 
+void bank::withdrawWithDetails() {
+    line();
+
+    cout << "\nEnter date: ";
+    cin  >> date;
+    cout << "Description: ";
+    cin  >> description;
+    cout << "Location: ";
+    cin  >> location;
+    cout << "Withdraw: $";
+    cin  >> x;
+    cout << endl;
+}
+
+void bank::withdrawRepeat() {
+    ifstream inFile;
+    float value;
+
+    inFile.open("amout.txt");
+    if (!inFile)
+    {
+        cout << "\nError opening file.\n";
+    }
+
+    while (inFile >> value)
+    {
+        if (value > 0)
+        {
+            cout << value;
+        }
+    }
+    inFile.close();
+
+    cout << "Please, confirm amout: ";
+    cin >> a;
+    sum = value - a;
+
+    ofstream out;  
+    out.open("amout.txt");
+    if (out.is_open()) {
+        out << sum << endl;
+    }
+     
+    std::cout << "End of program" << endl;
+    out.close();
 }
 
 //all accounts list
 void bank::all() {
     cout << endl;
-    cout << "Date: "<< id << endl;
-    cout << "Decription: " << name << endl;
-    cout << "Location: " << lastName << endl;
+    cout << "Date: "<< date << endl;
+    cout << "Decription: " << description << endl;
+    cout << "Location: " << location << endl;
     cout << "Amout: $" << x << endl;
     line();
 }
@@ -137,7 +183,7 @@ void bank::all() {
 //deposite +
 void bank::deposit() {
     cout << endl;
-    cout << "Enter data to deposite: $ ";
+    cout << "Enter data to deposite: +$ ";
     cin >> x;
     sum+=x;
 }
@@ -145,7 +191,7 @@ void bank::deposit() {
 //withdraw -
 void bank::withdraw() {
     cout << endl;
-    cout << "Enter data to withdraw: $ ";
+    cout << "Enter data to withdraw: -$ ";
     cin >> x;
     sum-=x;
 }
@@ -174,10 +220,10 @@ int bank::read_amout() {
 }
 
 // add and save account to file bank.txt
-void bank::new_in() {
+void bank::depositeWriteInFile() {
     ofstream outfile;
-    outfile.open("bank.txt", ios::app| ios::binary);
-    create();
+    outfile.open("deposite.txt", ios::app| ios::binary);
+    depositeWithDetails();
     outfile.write(reinterpret_cast<char*>(this), sizeof(*this));
     outfile.close();
 }
@@ -257,7 +303,7 @@ void bank::search_rec() {
     cin.get();
 }
 
-void bank::edit_deposite() {
+void bank::editDepositeDetails() {
     line();
     cout <<"\n\n\t\t\tDeposite" << endl;
     int n;
@@ -286,7 +332,7 @@ void bank::edit_deposite() {
     indep.write(reinterpret_cast<char*>(this), sizeof(*this));
 }
 
-void bank::edit_withdraw() {
+void bank::editWithdrawDetails() {
     line();
     cout <<"\n\n\t\t\tWithdraw" << endl;
     int n;
@@ -367,11 +413,12 @@ int main() {
 
         switch(option) {
         case 1:
-            bank.new_in();
-            bank.dep_rep();
+            bank.depositeWithDetails();
+            bank.depositeRepeat();
             break;
         case 2:
-            bank.new_in();
+            bank.withdrawWithDetails();
+            bank.withdrawRepeat();
             break;
         case 3:
             bank.amout();
@@ -380,10 +427,10 @@ int main() {
             bank.read_rec();
             break;
         case 5:
-            bank.edit_deposite();
+            bank.editDepositeDetails();
             break;
         case 6:
-            bank.edit_withdraw();
+            bank.editWithdrawDetails();
             break;
         case 7:
             bank.search_rec();
